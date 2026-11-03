@@ -24,13 +24,13 @@ A React-based School Management System designed to manage student records and di
 ### 1. Clone the repository
 
 ```bash
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/a2-112/School-management
 ```
 
 ### 2. Navigate into the project folder
 
 ```bash
-cd YOUR_PROJECT_FOLDER
+cd Student project
 ```
 
 ### 3. Install dependencies
