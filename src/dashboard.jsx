@@ -40,7 +40,7 @@ function Dashboard({student}) {
 
   const totalScore = allStudent.reduce((sum, num) => {
     if(!num.score) return sum
-   return sum + num.score
+   return sum + Number(num.score)
 },0)
 const average = allStudent.length ? Math.round(totalScore /allStudent.length ) : totalScore
 

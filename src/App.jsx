@@ -2,34 +2,79 @@ import Dashboard from "./dashboard.jsx";
 import StudentsPage from "./StudentsPage.jsx";
 import { initialStudents } from "./studentData";
 import { useState } from "react";
-import { X, BookOpen, School, PanelLeft } from "lucide-react";
+import { X, BookOpen, School, PanelLeft, UserPlus,GraduationCap } from "lucide-react";
 import "./sidebar.css";
+import StudentForm from "./StudentForm.jsx";
 
 function App() {
   const [student, setStudent] = useState(initialStudents);
   const [currentPage, setCurrentPage] = useState("Dashboard");
+  const [showBar, setShowBar] = useState(true);
 
-  return (
-    <div>
-      <Sidebar current={currentPage} func={setCurrentPage} />
-      {currentPage === "Dashboard" ? <Dashboard student={student} /> : <StudentsPage student={student}/> }
-    </div>
-  );
+  const addStudent = (newStudent) => {
+     setStudent((prev) => {
+    const newStudentWithId = {
+  ...newStudent,
+  id: Math.max(...prev.map((item) => item.id)) + 1
+};
+return [...prev, newStudentWithId]
+})
+  }
+
+return (
+  <div className="app-layout">
+  <Sidebar
+  current={currentPage}
+  func={setCurrentPage}
+  showBar={showBar}
+  setShowBar={setShowBar}
+/>
+
+    <main
+  className={`main-content ${showBar ? "sidebar-open" : "sidebar-closed"}`}
+>
+      {currentPage === "Dashboard" ? (
+        <Dashboard student={student} />
+      ) : currentPage === "Students" ? (
+        <StudentsPage student={student} />
+      ) : currentPage === "AddStudent" ? (
+        <StudentForm addStudent={addStudent} />
+      ) : (
+        <p>Page not found</p>
+      )}
+    </main>
+  </div>
+);
 }
 
-export function Sidebar({ current, func }) {
+export function Sidebar({
+  current,
+  func,
+  showBar,
+  setShowBar
+}) {
   
   const cancel = <X size={20} />;
   const book = <BookOpen size={20} />;
   const school = <School size={20} />;
   const bar = <PanelLeft size={24} />;
-  const [showBar, setShowBar] = useState(true);
+  const enroll = <UserPlus size={20} />;
 
   return (
     <>
       {showBar ? (
         <aside className="sidebar">
           <button onClick={() => setShowBar(false)}>{cancel}</button>
+         <div className="sidebar-brand">
+  <div className="brand-logo">
+    <GraduationCap size={27} />
+  </div>
+
+  <div className="brand-text">
+    <h2>CodewithJudy</h2>
+    <p>School Management</p>
+  </div>
+</div>
           <div>
             <button
               onClick={() => func("Dashboard")}
@@ -44,6 +89,14 @@ export function Sidebar({ current, func }) {
             >
               <span>{school}</span>
               Students
+            </button>
+
+            <button
+              onClick={() => func("AddStudent")}
+              className={current === "AddStudent" ? "active" : ""}
+            >
+              <span>{enroll}</span>
+              Enroll
             </button>
           </div>
         </aside>

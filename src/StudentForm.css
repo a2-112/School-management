@@ -1,0 +1,151 @@
+
+/* Form page */
+.form-page {
+  width: 100%;
+  min-height: 100vh;
+  padding: 40px;
+  background: var(--background);
+}
+
+/* Heading */
+.form-header {
+  margin-bottom: 30px;
+}
+
+.form-header h2 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+
+.form-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* Form card */
+.student-form {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 35px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Two-column row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+/* Field groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 23px;
+}
+
+.form-group label {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* Inputs and select */
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #dedfd6;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-group input::placeholder {
+  color: #a0aaa8;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--ink-light);
+  box-shadow: 0 0 0 3px rgba(20, 43, 59, 0.09);
+}
+
+/* Validation messages */
+.form-error {
+  margin: 0;
+  color: #b94b45;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Form buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.form-actions button {
+  padding: 12px 23px;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-btn {
+  background: var(--ink);
+  color: white;
+}
+
+.submit-btn:hover {
+  background: var(--ink-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.cancel-btn {
+  background: #eeeee7;
+  color: var(--ink);
+}
+
+.cancel-btn:hover {
+  background: var(--sage);
+}
+
+/* Responsive */
+@media (max-width: 650px) {
+  .form-page {
+    padding: 25px 15px;
+  }
+
+  .student-form {
+    padding: 23px 17px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-header h2 {
+    font-size: 24px;
+  }
+}
