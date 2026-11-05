@@ -1,6 +1,5 @@
 import { Users, School, BookOpen, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import "./dash.css";
 import {grades} from './studentData'
 
 export function StatCard({ title, value, icon }) {

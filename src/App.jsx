@@ -3,7 +3,6 @@ import StudentsPage from "./StudentsPage.jsx";
 import { initialStudents } from "./studentData";
 import { useState } from "react";
 import { X, BookOpen, School, PanelLeft, UserPlus,GraduationCap } from "lucide-react";
-import "./sidebar.css";
 import StudentForm from "./StudentForm.jsx";
 
 function App() {
