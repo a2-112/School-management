@@ -125,6 +125,7 @@ const statistics = [
       <section className="students-section">
         <h2>Recent Students</h2>
         <div className="table-wrapper">
+          <div className="table-container">
           <table className="students-table">
             <thead>
               <tr>
@@ -147,6 +148,7 @@ const statistics = [
               ))}
             </tbody>
           </table>
+          </div>
           {displayCount < foundStudent.length && (
             <button
               className="load-more-btn"
