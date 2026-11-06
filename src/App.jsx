@@ -7,7 +7,6 @@ import {
   X,
   BookOpen,
   School,
-  PanelLeft,
   UserPlus,
   GraduationCap
 } from "lucide-react";
@@ -16,10 +15,22 @@ import StudentForm from "./StudentForm.jsx";
 function App() {
   const [student, setStudent] = useState(initialStudents);
   const [currentPage, setCurrentPage] = useState("Dashboard");
-  const [showBar, setShowBar] = useState(true);
+  const [showBar, setShowBar] = useState(false);
+  const [edit,setEdit] = useState(null)
+
+   const editStudent = (id) => {
+     setEdit(student.find(item => item.id === id))
+     setCurrentPage("AddStudent")
+    }
 
   const addStudent = (newStudent) => {
+    const wasEditing = edit !== null;
     setStudent((prev) => {
+         if (edit !== null) {
+          return prev.map((item) =>
+        item.id === edit.id ? { ...item, ...newStudent } : item
+      );
+    }
       const newStudentWithId = {
         ...newStudent,
         id: Math.max(...prev.map((item) => item.id)) + 1
@@ -27,7 +38,21 @@ function App() {
 
       return [...prev, newStudentWithId];
     });
+    
+    if (wasEditing) {
+  setCurrentPage("Students");
+}
+      setEdit(null);
   };
+
+  const deleteStudent = (id) => {
+    setStudent(prev => prev
+      .filter(item => item.id !== id)
+    )}
+
+   
+   console.log(edit);
+   
 
   return (
     <div className={`app-layout ${showBar ? "sidebar-open" : "sidebar-closed"}`}>
@@ -58,9 +83,10 @@ function App() {
         {currentPage === "Dashboard" ? (
           <Dashboard student={student} />
         ) : currentPage === "Students" ? (
-          <StudentsPage student={student} />
+          <StudentsPage student={student} 
+          deleteStudent={deleteStudent}  editStudent = {editStudent}/>
         ) : currentPage === "AddStudent" ? (
-          <StudentForm addStudent={addStudent} />
+          <StudentForm addStudent={addStudent} editStudent = {edit}/>
         ) : (
           <p>Page not found</p>
         )}

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { grades } from "./studentData";
 
-function StudentForm({ addStudent }) {
+function StudentForm({ addStudent, editStudent }) {
   const [formData, setFormData] = useState({
     surName: "",
     lastName: "",
@@ -33,6 +33,12 @@ function StudentForm({ addStudent }) {
       return;
     }
     addStudent(formData);
+    setFormData({
+      surName: "",
+      lastName: "",
+      grade: "",
+      score: "",
+    });
   };
 
   const handleValue = (e) => {
@@ -41,89 +47,95 @@ function StudentForm({ addStudent }) {
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
- 
-return (
-  <div className="form-page">
-    <div className="form-header">
-      <h2>Add New Student</h2>
-      <p>Enter the student's information below to add them to your records.</p>
+  useEffect(() => {
+    if (editStudent !== null) {
+      setFormData({
+        surName: editStudent.surName,
+        lastName: editStudent.lastName,
+        grade: editStudent.grade,
+        score: String(editStudent.score),
+      });
+    } else {
+      setFormData({ surName: "", lastName: "", grade: "", score: "" });
+    }
+  }, [editStudent]);
+
+  return (
+    <div className="form-page">
+      <div className="form-header">
+        <h2>Add New Student</h2>
+        <p>
+          Enter the student's information below to add them to your records.
+        </p>
+      </div>
+
+      <form className="student-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="surName">Surname</label>
+            <input
+              id="surName"
+              type="text"
+              name="surName"
+              placeholder="Enter surname"
+              value={formData.surName}
+              onChange={handleValue}
+            />
+            {errors.surName && <p className="form-error">{errors.surName}</p>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="lastName">Lastname</label>
+            <input
+              id="lastName"
+              type="text"
+              name="lastName"
+              placeholder="Enter lastname"
+              value={formData.lastName}
+              onChange={handleValue}
+            />
+            {errors.lastName && <p className="form-error">{errors.lastName}</p>}
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="grade">Class</label>
+          <select
+            id="grade"
+            name="grade"
+            value={formData.grade}
+            onChange={handleValue}
+          >
+            <option value="">Select a class</option>
+            {grades.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+          {errors.grade && <p className="form-error">{errors.grade}</p>}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="score">Score</label>
+          <input
+            id="score"
+            type="number"
+            name="score"
+            placeholder="Enter score (0–100)"
+            value={formData.score}
+            onChange={handleValue}
+          />
+          {errors.score && <p className="form-error">{errors.score}</p>}
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="submit-btn">
+            {editStudent !== null ? "Edit Data" : "Add Student"}
+          </button>
+        </div>
+      </form>
     </div>
-
-    <form className="student-form" onSubmit={handleSubmit}>
-      <div className="form-row">
-        <div className="form-group">
-          <label htmlFor="surName">Surname</label>
-          <input
-            id="surName"
-            type="text"
-            name="surName"
-            placeholder="Enter surname"
-            value={formData.surName}
-            onChange={handleValue}
-          />
-          {errors.surName && (
-            <p className="form-error">{errors.surName}</p>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="lastName">Lastname</label>
-          <input
-            id="lastName"
-            type="text"
-            name="lastName"
-            placeholder="Enter lastname"
-            value={formData.lastName}
-            onChange={handleValue}
-          />
-          {errors.lastName && (
-            <p className="form-error">{errors.lastName}</p>
-          )}
-        </div>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="grade">Class</label>
-        <select
-          id="grade"
-          name="grade"
-          value={formData.grade}
-          onChange={handleValue}
-        >
-          <option value="">Select a class</option>
-          {grades.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        {errors.grade && (
-          <p className="form-error">{errors.grade}</p>
-        )}
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="score">Score</label>
-        <input
-          id="score"
-          type="number"
-          name="score"
-          placeholder="Enter score (0–100)"
-          value={formData.score}
-          onChange={handleValue}
-        />
-        {errors.score && (
-          <p className="form-error">{errors.score}</p>
-        )}
-      </div>
-
-      <div className="form-actions">
-        <button type="submit" className="submit-btn">
-          Add Student
-        </button>
-      </div>
-    </form>
-  </div>
-);
+  );
 }
 export default StudentForm;

@@ -1,10 +1,13 @@
 import { useState } from "react";
-import {grades} from './studentData'
+import { grades } from "./studentData";
+import { Trash2, Edit } from "lucide-react";
 
-function StudentsPage({ student }) {
-     const [searchTerm, setSearchTerm] = useState("");
-       const [selectedClass, setSelectedClass] = useState("All");
-        const [displayCount, setDisplayCount] = useState(5);
+function StudentsPage({ student, deleteStudent, editStudent }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedClass, setSelectedClass] = useState("All");
+  const [displayCount, setDisplayCount] = useState(5);
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+
   const records = student;
 
   const foundStudent = records.filter((item) => {
@@ -21,46 +24,49 @@ function StudentsPage({ student }) {
     return matchesSearch && matchesClass;
   });
 
-   const handleSearch = (e) => {
+  const handleSearch = (e) => {
     const { name, value } = e.target;
     if (name === "search") {
       setSearchTerm(value);
-      setDisplayCount(5)
+      setDisplayCount(5);
     }
   };
 
   const handleClass = (e) => {
     setSelectedClass(e.target.value);
-     setDisplayCount(5)
+    setDisplayCount(5);
   };
 
   return (
-    <div>
-         <div className="student-filters">
-          <div className="filter-group">
-            <label htmlFor="student-search">
-                    Find Student:
-                    <input
-                      id="student-search"
-                      type="search"
-                      value={searchTerm}
-                      name="search"
-                      onChange={(e) => handleSearch(e)}
-                    />
-                  </label>
-                </div>
-                 <div className="filter-group">
-            <label>
-                Class:
-                <select onChange={(e) => handleClass(e)} value = {selectedClass}>
-                  <option value="All">All Classes</option>
-                  {grades.map((item) => (
-                    <option key={item} value={item}>{item}</option>
-                  ))}
-                </select>
-                </label>
-            </div>
+    <div className="students-page">
+      <h2>Student Directory</h2>
+      <div className="student-filters">
+        <div className="filter-group">
+          <label htmlFor="student-search">
+            Find Student:
+            <input
+              id="student-search"
+              type="search"
+              value={searchTerm}
+              name="search"
+              onChange={(e) => handleSearch(e)}
+            />
+          </label>
         </div>
+        <div className="filter-group">
+          <label>
+            Class:
+            <select onChange={(e) => handleClass(e)} value={selectedClass}>
+              <option value="All">All Classes</option>
+              {grades.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </div>
 
       <div className="table-wrapper">
         <table className="students-table">
@@ -70,7 +76,7 @@ function StudentsPage({ student }) {
               <th>Last Name</th>
               <th>Class</th>
               <th>Score</th>
-              <th>Action</th>
+              <th colSpan={3}>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -87,19 +93,56 @@ function StudentsPage({ student }) {
                     View
                   </button>
                 </td>
+                <td>
+                  <button onClick={() => setSelectedStudentId(item.id)}>
+                    <span>
+                      <Trash2 size={16} />
+                    </span>
+                  </button>
+                </td>
+                <td>
+                  <button onClick={() => editStudent(item.id)}>
+                    <span>
+                      <Edit size={16} />
+                    </span>
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-           {displayCount < foundStudent.length && (
-            <button
-              className="load-more-btn"
-              onClick={() => setDisplayCount((prev) => prev + 5)}
-            >
-              Load more
-            </button>
-          )}
+        {displayCount < foundStudent.length && (
+          <button
+            className="load-more-btn"
+            onClick={() => setDisplayCount((prev) => prev + 5)}
+          >
+            Load more
+          </button>
+        )}
       </div>
+      {selectedStudentId !== null && (
+  <div className="delete-modal" role="dialog" aria-modal="true">
+    <div className="delete-modal-content">
+          <h2>Delete Student</h2>
+          <p>Are you sure you want to delete this student?</p>
+          <p>
+            This action cannot be undone and all your data will be permanently
+            removed.
+          </p>
+          <div>
+            <button onClick={() => setSelectedStudentId(null)}>Cancel</button>
+            <button
+              onClick={() => {
+                deleteStudent(selectedStudentId);
+                setSelectedStudentId(null);
+              }}
+            >
+              Delete Student
+            </button>
+          </div>
+        </div>
+          </div>
+      )}
     </div>
   );
 }
