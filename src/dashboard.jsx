@@ -1,5 +1,5 @@
 import { Users, School, BookOpen, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useState, memo, useMemo } from "react";
 import {grades} from './studentData'
 
 export function StatCard({ title, value, icon }) {
@@ -16,7 +16,8 @@ export function StatCard({ title, value, icon }) {
   );
 }
 
-export function StudentRow({ surName, lastName, grade, score }) {
+export const StudentRow = memo(function StudentRow({studentId, surName, lastName, grade, score, onView}) {
+  
   return (
     <tr>
       <td>{surName}</td>
@@ -24,32 +25,36 @@ export function StudentRow({ surName, lastName, grade, score }) {
       <td>{grade}</td>
       <td>{score}%</td>
       <td>
-        <button onClick={() => alert(`${surName} ${lastName}`)}>View</button>
+       <button onClick={() => onView(studentId)}>View</button>
       </td>
     </tr>
   );
-}
+})
 
-function Dashboard({student}) {
+function Dashboard({student,  setViewStudent }) {
   const [displayCount, setDisplayCount] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("All");
 
   const allStudent = student
 
-  const totalScore = allStudent.reduce((sum, num) => {
+  const totalScore =useMemo(() => { 
+    return allStudent.reduce((sum, num) => {
     if(!num.score) return sum
    return sum + Number(num.score)
 },0)
+}, [allStudent]);
+
 const average = allStudent.length ? Math.round(totalScore /allStudent.length ) : totalScore
 
-
-const statistics = [
+const statistics = useMemo(() => {
+  return [
   { id: 1, title: "Total Students", value: allStudent.length, icon: Users },
   { id: 2, title: "Total Classes", value: 6, icon: School },
   { id: 3, title: "Total Subjects", value: 12, icon: BookOpen },
   { id: 4, title: "Average Performance", value: `${average}%`, icon: TrendingUp },
 ];
+},[allStudent.length, average]) 
 
   const handleSearch = (e) => {
     const { name, value } = e.target;
@@ -64,7 +69,8 @@ const statistics = [
     setDisplayCount(5);
   };
 
-  const foundStudent = allStudent.filter((item) => {
+  const foundStudent = useMemo(() => {
+  return allStudent.filter((item) => {
     const first = item.surName.toLowerCase();
     const last = item.lastName.toLowerCase();
     const value = searchTerm.toLowerCase();
@@ -76,7 +82,8 @@ const statistics = [
       selectedClass === "All" || item.grade === selectedClass;
 
     return matchesSearch && matchesClass;
-  });
+  })
+    },[allStudent,searchTerm,selectedClass])
 
   return (
     <div className="container">
@@ -138,13 +145,15 @@ const statistics = [
             </thead>
             <tbody>
               {foundStudent.slice(0, displayCount).map((item) => (
-                <StudentRow
-                  key={item.id}
-                  surName={item.surName}
-                  lastName={item.lastName}
-                  grade={item.grade}
-                  score={item.score}
-                />
+             <StudentRow
+  key={item.id}
+  studentId={item.id}
+  surName={item.surName}
+  lastName={item.lastName}
+  grade={item.grade}
+  score={item.score}
+  onView={setViewStudent}
+/>
               ))}
             </tbody>
           </table>
@@ -163,4 +172,4 @@ const statistics = [
   );
 }
 
-export default Dashboard;
+export default memo(Dashboard);

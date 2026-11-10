@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useState,memo } from "react";
 import { grades } from "./studentData";
 import { Trash2, Edit } from "lucide-react";
 
-function StudentsPage({ student, deleteStudent, editStudent }) {
+function StudentsPage({
+  student,
+  deleteStudent,
+  editStudent,
+  setViewStudent,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("All");
   const [displayCount, setDisplayCount] = useState(5);
@@ -36,7 +41,10 @@ function StudentsPage({ student, deleteStudent, editStudent }) {
     setSelectedClass(e.target.value);
     setDisplayCount(5);
   };
-
+  const handleProfile = (id) => {
+    setViewStudent(id);
+  };
+ 
   return (
     <div className="students-page">
       <h2>Student Directory</h2>
@@ -87,11 +95,7 @@ function StudentsPage({ student, deleteStudent, editStudent }) {
                 <td>{item.grade}</td>
                 <td>{item.score}%</td>
                 <td>
-                  <button
-                    onClick={() => alert(`${item.surName} ${item.lastName}`)}
-                  >
-                    View
-                  </button>
+                  <button onClick={() => handleProfile(item.id)}>View</button>
                 </td>
                 <td>
                   <button onClick={() => setSelectedStudentId(item.id)}>
@@ -111,39 +115,39 @@ function StudentsPage({ student, deleteStudent, editStudent }) {
             ))}
           </tbody>
         </table>
-        {displayCount < foundStudent.length && (
-          <button
-            className="load-more-btn"
-            onClick={() => setDisplayCount((prev) => prev + 5)}
-          >
-            Load more
-          </button>
-        )}
       </div>
       {selectedStudentId !== null && (
-  <div className="delete-modal" role="dialog" aria-modal="true">
-    <div className="delete-modal-content">
-          <h2>Delete Student</h2>
-          <p>Are you sure you want to delete this student?</p>
-          <p>
-            This action cannot be undone and all your data will be permanently
-            removed.
-          </p>
-          <div>
-            <button onClick={() => setSelectedStudentId(null)}>Cancel</button>
-            <button
-              onClick={() => {
-                deleteStudent(selectedStudentId);
-                setSelectedStudentId(null);
-              }}
-            >
-              Delete Student
-            </button>
+        <div className="delete-modal" role="dialog" aria-modal="true">
+          <div className="delete-modal-content">
+            <h2>Delete Student</h2>
+            <p>Are you sure you want to delete this student?</p>
+            <p>
+              This action cannot be undone and all your data will be permanently
+              removed.
+            </p>
+            <div>
+              <button onClick={() => setSelectedStudentId(null)}>Cancel</button>
+              <button
+                onClick={() => {
+                  deleteStudent(selectedStudentId);
+                  setSelectedStudentId(null);
+                }}
+              >
+                Delete Student
+              </button>
+            </div>
           </div>
         </div>
-          </div>
+      )}
+      {displayCount < foundStudent.length && (
+        <button
+          className="load-more-btn"
+          onClick={() => setDisplayCount((prev) => prev + 5)}
+        >
+          Load more
+        </button>
       )}
     </div>
   );
 }
-export default StudentsPage;
+export default memo(StudentsPage);

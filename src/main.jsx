@@ -5,6 +5,7 @@ import './sidebar.css'
 import './dash.css'
 import './StudentForm.css'
 import './studentpage.css'
+import './StudentProfile.css'
 
 import App from './App.jsx'
 

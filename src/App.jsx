@@ -1,92 +1,106 @@
-
 import Dashboard from "./dashboard.jsx";
 import StudentsPage from "./StudentsPage.jsx";
 import { initialStudents } from "./studentData";
-import { useState } from "react";
-import {
-  X,
-  BookOpen,
-  School,
-  UserPlus,
-  GraduationCap
-} from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { X, BookOpen, School, UserPlus, GraduationCap,UserRound } from "lucide-react";
 import StudentForm from "./StudentForm.jsx";
+import StudentProfile from "./StudentProfile";
 
 function App() {
-  const [student, setStudent] = useState(initialStudents);
+  const [student, setStudent] = useState(() => {
+    return JSON.parse(localStorage.getItem("record")) || initialStudents;
+  });
   const [currentPage, setCurrentPage] = useState("Dashboard");
   const [showBar, setShowBar] = useState(false);
-  const [edit,setEdit] = useState(null)
+  const [edit, setEdit] = useState(null);
+  const [viewStudent, setViewStudent] = useState(null);
 
-   const editStudent = (id) => {
-     setEdit(student.find(item => item.id === id))
-     setCurrentPage("AddStudent")
-    }
+  const editStudent = useCallback((id) => {
+    setEdit(student.find((item) => item.id === id));
+    setCurrentPage("AddStudent");
+  },[student]);
 
   const addStudent = (newStudent) => {
     const wasEditing = edit !== null;
+
+    const cleanedStudent = {
+  ...newStudent,
+  score: Number(newStudent.score)
+};
     setStudent((prev) => {
-         if (edit !== null) {
-          return prev.map((item) =>
-        item.id === edit.id ? { ...item, ...newStudent } : item
-      );
-    }
+      if (edit !== null) {
+        return prev.map((item) =>
+          item.id === edit.id ? { ...item, ...cleanedStudent} : item,
+        );
+      }
       const newStudentWithId = {
-        ...newStudent,
-        id: Math.max(...prev.map((item) => item.id)) + 1
+        ...cleanedStudent,
+        id: Math.max(0, ...prev.map((item) => item.id)) + 1,
       };
 
       return [...prev, newStudentWithId];
     });
-    
+
     if (wasEditing) {
-  setCurrentPage("Students");
-}
-      setEdit(null);
+      setCurrentPage("Students");
+    }
+    setEdit(null);
   };
+  const deleteStudent = useCallback((id) => {
+    setStudent((prev) => prev.filter((item) => item.id !== id));
+  },[]) 
 
-  const deleteStudent = (id) => {
-    setStudent(prev => prev
-      .filter(item => item.id !== id)
-    )}
+  const selectedStudent = student.find((item) => item.id === viewStudent);
 
-   
-   console.log(edit);
-   
+  const openProfile = useCallback((id) => {
+setViewStudent(id)
+setCurrentPage("Profile")
+  },[setViewStudent, setCurrentPage])
+
+  useEffect(() => {
+    localStorage.setItem("record", JSON.stringify(student));
+  }, [student]);
 
   return (
-    <div className={`app-layout ${showBar ? "sidebar-open" : "sidebar-closed"}`}>
+    <div
+      className={`app-layout ${showBar ? "sidebar-open" : "sidebar-closed"}`}
+    >
       <Sidebar
         current={currentPage}
         func={setCurrentPage}
         showBar={showBar}
         setShowBar={setShowBar}
+        setEdit={setEdit}
       />
 
       <main className="main-content">
-
-        {/* Mobile header */}
         <header className="mobile-header">
           <div className="mobile-brand">
             <GraduationCap size={25} />
             <span>CodewithJudy</span>
           </div>
 
-          <button
-            onClick={() => setShowBar(true)}
-            aria-label="Open navigation"
-          >
-            <School size={23} />
+          <button onClick={() => setShowBar(true)} aria-label="Open navigation">
+            <School size={22} />
           </button>
         </header>
 
-        {currentPage === "Dashboard" ? (
-          <Dashboard student={student} />
+    { currentPage === "Dashboard" ? (
+          <Dashboard student={student} setViewStudent={openProfile} />
         ) : currentPage === "Students" ? (
-          <StudentsPage student={student} 
-          deleteStudent={deleteStudent}  editStudent = {editStudent}/>
+          <StudentsPage
+            student={student}
+            deleteStudent={deleteStudent}
+            editStudent={editStudent}
+            setViewStudent={openProfile}
+          />
         ) : currentPage === "AddStudent" ? (
-          <StudentForm addStudent={addStudent} editStudent = {edit}/>
+          <StudentForm addStudent={addStudent} editStudent={edit} />
+        ) : currentPage === "Profile" ? (
+          <StudentProfile student={selectedStudent}
+            func={() => {
+              setViewStudent(null);
+              setCurrentPage("Students")}}/>
         ) : (
           <p>Page not found</p>
         )}
@@ -95,11 +109,12 @@ function App() {
   );
 }
 
-export function Sidebar({ current, func, showBar, setShowBar }) {
+export function Sidebar({ current, func, showBar, setShowBar,setEdit }) {
   const cancel = <X size={20} />;
   const book = <BookOpen size={20} />;
   const school = <School size={20} />;
   const enroll = <UserPlus size={20} />;
+  const pupil = <UserRound size={20}/>
 
   return (
     <>
@@ -125,7 +140,10 @@ export function Sidebar({ current, func, showBar, setShowBar }) {
 
           <div>
             <button
-              onClick={() => func("Dashboard")}
+              onClick={() => {
+                setEdit(null)
+                func("Dashboard")
+              }}
               className={current === "Dashboard" ? "active" : ""}
             >
               <span>{book}</span>
@@ -133,7 +151,9 @@ export function Sidebar({ current, func, showBar, setShowBar }) {
             </button>
 
             <button
-              onClick={() => func("Students")}
+              onClick={() => 
+                 { setEdit(null)
+                  func("Students")}}
               className={current === "Students" ? "active" : ""}
             >
               <span>{school}</span>
