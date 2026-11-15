@@ -1,6 +1,7 @@
 import { Users, School, BookOpen, TrendingUp } from "lucide-react";
-import { useState, memo, useMemo } from "react";
+import { useState, memo, useMemo} from "react";
 import {grades} from './studentData'
+
 
 export function StatCard({ title, value, icon }) {
   const Icon = icon;
@@ -31,11 +32,10 @@ export const StudentRow = memo(function StudentRow({studentId, surName, lastName
   );
 })
 
-function Dashboard({student,  setViewStudent }) {
+function Dashboard({student, setViewStudent }) {
   const [displayCount, setDisplayCount] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClass, setSelectedClass] = useState("All");
-
   const allStudent = student
 
   const totalScore =useMemo(() => { 

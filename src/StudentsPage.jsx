@@ -1,4 +1,4 @@
-import { useState,memo } from "react";
+import { useState,memo} from "react";
 import { grades } from "./studentData";
 import { Trash2, Edit } from "lucide-react";
 
@@ -13,7 +13,7 @@ function StudentsPage({
   const [displayCount, setDisplayCount] = useState(5);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
-  const records = student;
+  const records =student
 
   const foundStudent = records.filter((item) => {
     const first = item.surName.toLowerCase();
