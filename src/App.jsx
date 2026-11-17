@@ -12,6 +12,7 @@ import { X, BookOpen, School, UserPlus, GraduationCap } from "lucide-react";
 import StudentForm from "./StudentForm.jsx";
 import StudentProfile from "./StudentProfile";
 import { StudentsContext } from "./StudentsContext";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 
 function studentsReducer(state, action) {
   switch (action.type) {
@@ -43,29 +44,29 @@ const loadStudent = () => {
 };
 function App() {
   const [student, dispatch] = useReducer(studentsReducer, null, loadStudent);
-  const [currentPage, setCurrentPage] = useState("Dashboard");
   const [showBar, setShowBar] = useState(false);
   const [edit, setEdit] = useState(null);
   const [viewStudent, setViewStudent] = useState(null);
+  const navigate = useNavigate();
 
   const editStudent = useCallback(
     (id) => {
       setEdit(student.find((item) => item.id === id));
-      setCurrentPage("AddStudent");
+      navigate("/form");
     },
-    [student],
+    [student, navigate],
   );
 
   const addStudent = (newStudent) => {
     const wasEditing = edit !== null;
     if (edit !== null) {
-      dispatch({ type: "EDIT", id:edit.id, student: newStudent });
+      dispatch({ type: "EDIT", id: edit.id, student: newStudent });
     } else {
       dispatch({ type: "ADD", student: newStudent });
     }
 
     if (wasEditing) {
-      setCurrentPage("Students");
+      navigate("/students")
     }
     setEdit(null);
   };
@@ -79,9 +80,9 @@ function App() {
   const openProfile = useCallback(
     (id) => {
       setViewStudent(id);
-      setCurrentPage("Profile");
+      navigate("/profile")
     },
-    [setViewStudent, setCurrentPage],
+    [setViewStudent, navigate],
   );
 
   useEffect(() => {
@@ -94,8 +95,6 @@ function App() {
         className={`app-layout ${showBar ? "sidebar-open" : "sidebar-closed"}`}
       >
         <Sidebar
-          current={currentPage}
-          func={setCurrentPage}
           showBar={showBar}
           setShowBar={setShowBar}
           setEdit={setEdit}
@@ -115,36 +114,50 @@ function App() {
               <School size={22} />
             </button>
           </header>
-
-          {currentPage === "Dashboard" ? (
-            <Dashboard student={student} setViewStudent={openProfile} />
-          ) : currentPage === "Students" ? (
-            <StudentsPage
-              student={student}
-              deleteStudent={deleteStudent}
-              editStudent={editStudent}
-              setViewStudent={openProfile}
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Dashboard student={student} setViewStudent={openProfile} />
+              }
             />
-          ) : currentPage === "AddStudent" ? (
-            <StudentForm addStudent={addStudent} editStudent={edit} />
-          ) : currentPage === "Profile" ? (
-            <StudentProfile
-              student={selectedStudent}
-              func={() => {
-                setViewStudent(null);
-                setCurrentPage("Students");
-              }}
+            <Route
+              path="/students"
+              element={
+                <StudentsPage
+                  student={student}
+                  deleteStudent={deleteStudent}
+                  editStudent={editStudent}
+                  setViewStudent={openProfile}
+                />
+              }
             />
-          ) : (
-            <p>Page not found</p>
-          )}
+            <Route
+              path="/form"
+              element={
+                <StudentForm addStudent={addStudent} editStudent={edit} />
+              }
+            />
+            <Route
+              path="/students/:id"
+              element={
+                <StudentProfile
+                  student={selectedStudent}
+                  func={() => {
+                    setViewStudent(null);
+                    navigate("/students")
+                  }}
+                />
+              }
+            />
+          </Routes>
         </main>
       </div>
     </StudentsContext.Provider>
   );
 }
 
-export function Sidebar({ current, func, showBar, setShowBar, setEdit }) {
+export function Sidebar({showBar, setShowBar, setEdit }) {
   const cancel = <X size={20} />;
   const book = <BookOpen size={20} />;
   const school = <School size={20} />;
@@ -174,35 +187,40 @@ export function Sidebar({ current, func, showBar, setShowBar, setEdit }) {
           </div>
 
           <div>
-            <button
-              onClick={() => {
+              <NavLink
+                to="/"
+                end
+                onClick={() => {
                 setEdit(null);
-                func("Dashboard");
               }}
-              className={current === "Dashboard" ? "active" : ""}
-            >
-              <span>{book}</span>
-              Dashboard
-            </button>
+                className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
+              >
+                <span>{book}</span>
+                Dashboard
+              </NavLink>
 
-            <button
-              onClick={() => {
+              <NavLink
+                to="/students"
+                onClick={() => {
                 setEdit(null);
-                func("Students");
               }}
-              className={current === "Students" ? "active" : ""}
-            >
-              <span>{school}</span>
-              Students
-            </button>
+                  className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
+              >
+                <span>{school}</span>
+                Students
+              </NavLink>
 
-            <button
-              onClick={() => func("AddStudent")}
-              className={current === "AddStudent" ? "active" : ""}
-            >
-              <span>{enroll}</span>
-              Enroll
-            </button>
+              <NavLink
+                to="/form"
+                onClick={() => {
+                setEdit(null);
+              }}
+                  className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
+              >
+                <span>{enroll}</span>
+                Enroll
+              </NavLink>
+
           </div>
         </aside>
       ) : (
