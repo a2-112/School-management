@@ -1,6 +1,19 @@
 import { UserRound } from "lucide-react";
+import {useParams } from "react-router-dom";
+import { useContext } from "react";
+import { StudentsContext } from "./StudentsContext";
 
-function StudentProfile({ student, func }) {
+
+function StudentProfile({func }) {
+  const params = useParams();
+  const studentId = Number(params.id)
+
+  const {student} = useContext(StudentsContext);
+
+  const selectedStudent = student.find(
+  (item) => item.id === studentId
+); 
+
   return (
     <div className="profile-page">
       <div className="profile-header">

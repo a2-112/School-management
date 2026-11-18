@@ -12,7 +12,7 @@ import { X, BookOpen, School, UserPlus, GraduationCap } from "lucide-react";
 import StudentForm from "./StudentForm.jsx";
 import StudentProfile from "./StudentProfile";
 import { StudentsContext } from "./StudentsContext";
-import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
+import { Routes, Route, NavLink, useNavigate, useParams } from "react-router-dom";
 
 function studentsReducer(state, action) {
   switch (action.type) {
@@ -46,7 +46,7 @@ function App() {
   const [student, dispatch] = useReducer(studentsReducer, null, loadStudent);
   const [showBar, setShowBar] = useState(false);
   const [edit, setEdit] = useState(null);
-  const [viewStudent, setViewStudent] = useState(null);
+
   const navigate = useNavigate();
 
   const editStudent = useCallback(
@@ -75,14 +75,11 @@ function App() {
     dispatch({ type: "DELETE", id: id });
   }, []);
 
-  const selectedStudent = student.find((item) => item.id === viewStudent);
-
   const openProfile = useCallback(
     (id) => {
-      setViewStudent(id);
-      navigate("/profile")
+      navigate(`/students/${id}`);
     },
-    [setViewStudent, navigate],
+    [navigate],
   );
 
   useEffect(() => {
@@ -142,9 +139,7 @@ function App() {
               path="/students/:id"
               element={
                 <StudentProfile
-                  student={selectedStudent}
                   func={() => {
-                    setViewStudent(null);
                     navigate("/students")
                   }}
                 />
