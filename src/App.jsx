@@ -12,7 +12,7 @@ import { X, BookOpen, School, UserPlus, GraduationCap } from "lucide-react";
 import StudentForm from "./StudentForm.jsx";
 import StudentProfile from "./StudentProfile";
 import { StudentsContext } from "./StudentsContext";
-import { Routes, Route, NavLink, useNavigate, useParams } from "react-router-dom";
+import { Routes, Route, NavLink, useNavigate } from "react-router-dom";
 
 function studentsReducer(state, action) {
   switch (action.type) {

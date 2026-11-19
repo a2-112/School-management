@@ -9,12 +9,16 @@ function StudentProfile({func }) {
   const studentId = Number(params.id)
 
   const {student} = useContext(StudentsContext);
-
+  
   const selectedStudent = student.find(
   (item) => item.id === studentId
 ); 
 
+
+
   return (
+    <>
+    {selectedStudent ? (
     <div className="profile-page">
       <div className="profile-header">
          <div className="profile-avatar">
@@ -22,9 +26,9 @@ function StudentProfile({func }) {
   </div>
           <div className="profile-heading">
           <p className="profile-subtitle">STUDENT PROFILE</p>
-          <h2>{student.surName} {student.lastName}</h2>
+          <h2>{selectedStudent.surName} {selectedStudent.lastName}</h2>
           <p className="student-id">
-            Student ID: {String(student.id).padStart(5, "0")}
+            Student ID: {String(selectedStudent.id).padStart(5, "0")}
           </p>
         </div>
 
@@ -37,12 +41,12 @@ function StudentProfile({func }) {
         <div className="profile-grid">
           <div className="profile-item">
             <p>Class</p>
-            <h3>{student.grade}</h3>
+            <h3>{selectedStudent.grade}</h3>
           </div>
 
           <div className="profile-item">
             <p>Academic Score</p>
-            <h3>{student.score}%</h3>
+            <h3>{selectedStudent.score}%</h3>
           </div>
         </div>
       </div>
@@ -53,12 +57,12 @@ function StudentProfile({func }) {
         <div className="profile-grid">
           <div className="profile-item">
             <p>First Name</p>
-            <h3>{student.surName}</h3>
+            <h3>{selectedStudent.surName}</h3>
           </div>
 
           <div className="profile-item">
             <p>Last Name</p>
-            <h3>{student.lastName}</h3>
+            <h3>{selectedStudent.lastName}</h3>
           </div>
         </div>
       </div>
@@ -67,6 +71,8 @@ function StudentProfile({func }) {
         Back to Students
       </button>
     </div>
+    ) : (<h2>Student not found</h2>)}
+    </>
   );
 }
 
