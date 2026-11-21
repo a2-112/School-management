@@ -1,6 +1,7 @@
 import Dashboard from "./dashboard.jsx";
 import StudentsPage from "./StudentsPage.jsx";
 import { initialStudents } from "./studentData";
+import InvalidPage from "./Invalid.jsx";
 import {
   useState,
   useEffect,
@@ -45,30 +46,27 @@ const loadStudent = () => {
 function App() {
   const [student, dispatch] = useReducer(studentsReducer, null, loadStudent);
   const [showBar, setShowBar] = useState(false);
-  const [edit, setEdit] = useState(null);
 
   const navigate = useNavigate();
 
   const editStudent = useCallback(
     (id) => {
-      setEdit(student.find((item) => item.id === id));
-      navigate("/form");
+      navigate(`/student/${id}/edit`);
     },
-    [student, navigate],
+    [navigate],
   );
 
-  const addStudent = (newStudent) => {
-    const wasEditing = edit !== null;
-    if (edit !== null) {
-      dispatch({ type: "EDIT", id: edit.id, student: newStudent });
+  const addStudent = (newStudent, studentId) => {
+    const wasEditing = !Number.isNaN(studentId);
+    if (!Number.isNaN(studentId)) {
+      dispatch({ type: "EDIT", id: studentId, student: newStudent });
     } else {
       dispatch({ type: "ADD", student: newStudent });
     }
 
     if (wasEditing) {
-      navigate("/students")
+      navigate("/students");
     }
-    setEdit(null);
   };
 
   const deleteStudent = useCallback((id) => {
@@ -91,11 +89,7 @@ function App() {
       <div
         className={`app-layout ${showBar ? "sidebar-open" : "sidebar-closed"}`}
       >
-        <Sidebar
-          showBar={showBar}
-          setShowBar={setShowBar}
-          setEdit={setEdit}
-        />
+        <Sidebar showBar={showBar} setShowBar={setShowBar}/>
 
         <main className="main-content">
           <header className="mobile-header">
@@ -131,20 +125,23 @@ function App() {
             />
             <Route
               path="/form"
-              element={
-                <StudentForm addStudent={addStudent} editStudent={edit} />
-              }
+              element={<StudentForm addStudent={addStudent} />}
             />
             <Route
               path="/students/:id"
               element={
                 <StudentProfile
                   func={() => {
-                    navigate("/students")
+                    navigate("/students");
                   }}
                 />
               }
             />
+            <Route
+              path="/student/:id/edit"
+              element={<StudentForm addStudent={addStudent} />}
+            />
+            <Route path="*" element={<InvalidPage />} />
           </Routes>
         </main>
       </div>
@@ -152,7 +149,7 @@ function App() {
   );
 }
 
-export function Sidebar({showBar, setShowBar, setEdit }) {
+export function Sidebar({ showBar, setShowBar}) {
   const cancel = <X size={20} />;
   const book = <BookOpen size={20} />;
   const school = <School size={20} />;
@@ -182,40 +179,36 @@ export function Sidebar({showBar, setShowBar, setEdit }) {
           </div>
 
           <div>
-              <NavLink
-                to="/"
-                end
-                onClick={() => {
-                setEdit(null);
-              }}
-                className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
-              >
-                <span>{book}</span>
-                Dashboard
-              </NavLink>
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `nav-link  ${isActive ? "active" : ""}`
+              }
+            >
+              <span>{book}</span>
+              Dashboard
+            </NavLink>
 
-              <NavLink
-                to="/students"
-                onClick={() => {
-                setEdit(null);
-              }}
-                  className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
-              >
-                <span>{school}</span>
-                Students
-              </NavLink>
+            <NavLink
+              to="/students"
+              className={({ isActive }) =>
+                `nav-link  ${isActive ? "active" : ""}`
+              }
+            >
+              <span>{school}</span>
+              Students
+            </NavLink>
 
-              <NavLink
-                to="/form"
-                onClick={() => {
-                setEdit(null);
-              }}
-                  className={({ isActive }) => `nav-link  ${(isActive ? "active" : "")}`}
-              >
-                <span>{enroll}</span>
-                Enroll
-              </NavLink>
-
+            <NavLink
+              to="/form"
+              className={({ isActive }) =>
+                `nav-link  ${isActive ? "active" : ""}`
+              }
+            >
+              <span>{enroll}</span>
+              Enroll
+            </NavLink>
           </div>
         </aside>
       ) : (
